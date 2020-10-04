@@ -91,13 +91,46 @@ FIO_ERROR_ENUM FIO__writeSeekToStart(FILE *input);
 FIO_SIZE FIO__readSeekPositionRaw(FILE *input);
 FIO_ERROR_ENUM FIO__readSeekPosition(FILE *input, FIO_SIZE *resultStorage);
 
+/**
+Attempts to read the full data of the file specified by filePath into metaStore.
+Frees data if an error is encountered.
+**/
 FIO_ERROR_ENUM FIO__readPathToMemory(const char *filePath, FIO_Data *metaStore);
-FIO_ERROR_ENUM FIO__writeMemoryToPath(const char *filePath, void *data, size_t byteLength);
 
+/**
+Attempts to write the full data of the given length into the path specified by filePath.
+If a path given already has data in it, that data is not overwritten, and no action occurs -- reported as error.
+Reports if the write failed. Data should not be written at all if there is any failure, but depends on platform behavior.
+**/
+FIO_ERROR_ENUM FIO__writeMemoryToPathSafe(const char *filePath, void *data, size_t byteLength);
+FIO_ERROR_ENUM FIO__writeMemoryToPath(const char *filePath, void *data, size_t byteLength);
+/**
+Attempts to write the full data of the given length into the path specified by filePath.
+If the path given already has data in it, that data is cleared.
+Reports if the write failed. Data should not be written at all if there is any failure, but depends on platform behavior.
+**/
+FIO_ERROR_ENUM FIO__writeMemoryToPathType(const char *filePath, void *data, size_t byteLength, FIO_OPEN_ENUM openType);
+
+/**
+Attempts to read the full data into metaStore.
+Frees data if an error is encountered.
+**/
 FIO_ERROR_ENUM FIO__readFull(FILE *input, FIO_Data *metaStore);
+/**
+Attempts to read the full data into the addressOfBufferPointer.
+Frees data if an error is encountered; determined by the code in FIO_SIZE
+**/
 FIO_SIZE FIO__readFullRaw(FILE *input, unsigned char **addressOfBufferPointer);
 
+/**
+Attempts to read the full data into metaStore.
+Keeps data if and reports if error is encountered
+**/
 FIO_ERROR_ENUM FIO__readFullBestAttempt(FILE *input, FIO_Data *data);
+/**
+Attempts to read the full data into addressOfBufferPointer.
+Keeps data if and reports if error is encountered; determined by the code in FIO_SIZE
+**/
 FIO_SIZE FIO__readFullBestAttemptRaw(FILE *input, unsigned char **addressOfBufferPointer, FIO_SIZE *readLength);
 
 

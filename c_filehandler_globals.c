@@ -170,10 +170,17 @@ FIO_ERROR_ENUM FIO__readSeekPosition(FILE *input, FIO_SIZE *resultStorage){
 }
 
 
+FIO_ERROR_ENUM FIO__writeMemoryToPathSafe(const char *filePath, void *data, size_t byteLength){
+    return FIO__writeMemoryToPathType(filePath, data, byteLength FIO_OPEN_W_IF_NOT_EXIST);
+}
 
 FIO_ERROR_ENUM FIO__writeMemoryToPath(const char *filePath, void *data, size_t byteLength){
+    return FIO__writeMemoryToPathType(filePath, data, byteLength FIO_OPEN_W_CLEAR_CREATE);
+}
 
-    FILE *output = FIO__openPath(filePath, FIO_OPEN_W_CLEAR_CREATE);
+FIO_ERROR_ENUM FIO__writeMemoryToPathType(const char *filePath, void *data, size_t byteLength, FIO_OPEN_ENUM openType){
+
+    FILE *output = FIO__openPath(filePath, openType);
     if(output == NULL){
         return FIO_ERROR_FAILURE;
     }
