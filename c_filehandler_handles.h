@@ -13,6 +13,16 @@ typedef struct FIO_FileBuffer{
     FIO_Data data;
 }FIO_FileBuffer;
 
+
+typedef struct FIO_FileReader{
+    FIO_FileBuffer buff;
+}FIO_FileReader;
+
+typedef struct FIO_FileWriter{
+    FIO_FileBuffer buff;
+}FIO_FileWriter;
+
+/*
 typedef struct FIO_FileReader{
     char *fullFilePath;
     FIO_FileBuffer buff;
@@ -28,6 +38,7 @@ typedef struct FIO_FileLogger{
     FIO_FileBuffer buff;
 }FIO_FileLogger;
 
+/*
 FIO_Data* FIO_newData(FILE* input);
 FIO_ERROR_ENUM FIO_initData(FIO_Data *data, FILE* input);
 
@@ -40,12 +51,7 @@ FIO_ERROR_ENUM FIO_initDataDeferred(FIO_Data *data);
 FIO_Data* FIO_newDataDeferredComplex(FIO_SIZE bufferSize);
 FIO_ERROR_ENUM FIO_initDataDeferredComplex(FILE* input, FIO_SIZE bufferSize);
 
-
-
 FIO_ERROR_ENUM FIO_DataNext(FIO_Data *data, FILE* input);
-
-
-
 
 
 FIO_Data* FIO_newFileDeferred(FILE* input);
@@ -61,6 +67,7 @@ FIO_ERROR_ENUM FIO_initFileReader(FIO_FileReader *reader, const char* fullFilePa
 
 FIO_Data* FIO_newFileReaderComplex(FIO_FileReader *reader, size_t readBufferSize, FILE* existingHandle, unsigned char* existingBuffer);
 FIO_ERROR_ENUM FIO_initFileReaderComplex(FIO_FileReader *reader, size_t readBufferSize, FILE* existingHandle, unsigned char* existingBuffer);
+*/
 
 
 #endif // C_FILEHANDLER_HANDLES_H_INCLUDED

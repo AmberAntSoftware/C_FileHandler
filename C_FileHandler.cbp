@@ -35,6 +35,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="c_filehandler.h" />
+		<Unit filename="c_filehandler_globals.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="c_filehandler_globals.h" />
 		<Unit filename="c_filehandler_handles.c">
 			<Option compilerVar="CC" />
 		</Unit>
