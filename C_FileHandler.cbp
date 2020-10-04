@@ -35,14 +35,15 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="c_filehandler.h" />
+		<Unit filename="c_filehandler_handles.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="c_filehandler_handles.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
-			<envvars />
-			<code_completion />
 			<lib_finder disable_auto="1" />
-			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
