@@ -18,6 +18,9 @@
 
 /** TODO construct handling with win32 functions **/
 
+/**
+Enumeration for encapsulated fopen types
+**/
 typedef enum FIO_OPEN_ENUM{
     /** Read only, the file must exist, starts at beginning of file **/
     FIO_OPEN_R_EXISTING,
@@ -68,6 +71,14 @@ typedef struct FIO_Data{
 
 }FIO_Data;
 
+
+
+/*************************************
+Internal Operations and Conversions
+*************************************/
+
+
+
 /**
 Any FILE* that failed to close in FIO__close(FILE*) will be stored in this.
 Internal errors may also happen, periodically attempt to reclose them with this.
@@ -85,20 +96,81 @@ returns FIO_OPEN_ENUM_ERROR on error
 **/
 FIO_OPEN_ENUM FIO__fopenArgsToEnum(const char* fopenArgument, size_t argsByteLength);
 
+
+
+
+/*************************************
+FILE* manipuation
+*************************************/
+
+
+
+
+/**
+Opens a FILE* from a path with the specified action.
+See FIO_OPEN_ENUM documentation
+**/
 FILE* FIO__openPath(const char *filePath, FIO_OPEN_ENUM action);
+
+/**
+Attemps to read the full quantity specified.
+If the full quantity cannot be read, errors.
+**/
+FIO_ERROR_ENUM FIO__read(FILE *handle, void *storage, size_t byteLength);
+
+/**
+Attemps to write the full quantity specified.
+If the full quantity cannot be written, errors.
+**/
 FIO_ERROR_ENUM FIO__write(FILE *handle, void *data, size_t byteLength);
+
+/**
+Reads the maximum amount specified.
+If the max amount cannot be read, specifies how much was given.
+Check for errors in FIO_SIZE sentinel values.
+**/
+FIO_SIZE FIO__readMax(FILE *handle, void *storage, size_t byteLength);
+
+/**
+Reads the maximum amount specified.
+If the max amount cannot be read, specifies how much was read.
+Check for errors in FIO_SIZE sentinel values.
+**/
+FIO_SIZE FIO__writeMax(FILE *handle, void *data, size_t byteLength);
+
+/**
+Attempts to close the FILE* 3 times.
+If the FILE* cannot be closed, it is added to the internal fail queue.
+Returns FIO_ERROR_FAILURE if the handle was not closed.
+**/
 FIO_ERROR_ENUM FIO__close(FILE *input);
 
-FIO_ERROR_ENUM FIO__isSeekAtEnd(FILE *input);
-FIO_ERROR_ENUM FIO__isInError(FILE *input);
 
-FIO_ERROR_ENUM FIO__writeSeekOffset(FILE *input, FIO_SIZE offsetFromCurrent);
-FIO_ERROR_ENUM FIO__writeSeekPosition(FILE *input, FIO_SIZE offsetFromZero);
-FIO_ERROR_ENUM FIO__writeSeekToEnd(FILE *input);
-FIO_ERROR_ENUM FIO__writeSeekToStart(FILE *input);
 
-FIO_SIZE FIO__readSeekPositionRaw(FILE *input);
-FIO_ERROR_ENUM FIO__readSeekPosition(FILE *input, FIO_SIZE *resultStorage);
+/*************************************
+FILE* Seek operations
+*************************************/
+
+
+
+FIO_bool FIO__isSeekAtEnd(FILE *input);
+FIO_bool FIO__isInError(FILE *input);
+
+FIO_ERROR_ENUM FIO__setSeekOffset(FILE *input, FIO_SIZE offsetFromCurrent);
+FIO_ERROR_ENUM FIO__setSeekPosition(FILE *input, FIO_SIZE offsetFromZero);
+FIO_ERROR_ENUM FIO__setSeekToEnd(FILE *input);
+FIO_ERROR_ENUM FIO__setSeekToStart(FILE *input);
+
+FIO_SIZE FIO__getSeekPositionRaw(FILE *input);
+FIO_ERROR_ENUM FIO__getSeekPosition(FILE *input, FIO_SIZE *resultStorage);
+
+
+
+/*************************************
+FILE* Batch Operations
+*************************************/
+
+
 
 /**
 Attempts to read the full data of the file specified by filePath into metaStore.

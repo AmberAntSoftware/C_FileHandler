@@ -123,7 +123,7 @@ FILE* FIO__openPath(const char *filePath, FIO_OPEN_ENUM action){
                 return NULL;
             }
             /** file is not empty **/
-            if(FIO__readSeekPositionRaw(tmp) != 0){
+            if(FIO__getSeekPositionRaw(tmp) != 0){
                 FIO__close(tmp);
                 return NULL;
             }
@@ -136,6 +136,17 @@ FILE* FIO__openPath(const char *filePath, FIO_OPEN_ENUM action){
 
 }
 
+FIO_ERROR_ENUM FIO__read(FILE *handle, void *storage, size_t byteLength){
+
+    size_t read = fread(storage, byteLength, 1, handle);
+
+    if(read != 1){
+        return FIO_ERROR_FAILURE;
+    }
+
+    return FIO_ERROR_SUCCESS;
+}
+
 FIO_ERROR_ENUM FIO__write(FILE *handle, void *data, size_t byteLength){
 
     size_t write = fwrite(data, byteLength, 1, handle);
@@ -145,6 +156,29 @@ FIO_ERROR_ENUM FIO__write(FILE *handle, void *data, size_t byteLength){
     }
 
     return FIO_ERROR_SUCCESS;
+}
+
+FIO_SIZE FIO__readMax(FILE *handle, void *storage, size_t byteLength){
+
+    size_t read = fread(storage, 1, byteLength, handle);
+
+    /*if(read != byteLength){
+        if(FIO__isInError(handle)){
+
+        }
+    }*/
+    return (FIO_SIZE)read;
+}
+
+FIO_SIZE FIO__writeMax(FILE *handle, void *data, size_t byteLength){
+
+    size_t written = fwrite(data, 1, byteLength, handle);
+    /*if(written != byteLength){
+        if(FIO__isInError(handle)){
+
+        }
+    }*/
+    return (FIO_SIZE)written;
 }
 
 FIO_ERROR_ENUM FIO__close(FILE *input){
@@ -163,22 +197,22 @@ FIO_ERROR_ENUM FIO__close(FILE *input){
     return FIO_ERROR_SUCCESS;
 }
 
-FIO_ERROR_ENUM FIO__isSeekAtEnd(FILE *input){
+FIO_bool FIO__isSeekAtEnd(FILE *input){
     if(feof(input) != 0){
-        return FIO_ERROR_SUCCESS;
+        return FIO_TRUE;
     }
-    return FIO_ERROR_FAILURE;
+    return FIO_FALSE;
 }
 
-FIO_ERROR_ENUM FIO__isInError(FILE *input){
+FIO_bool FIO__isInError(FILE *input){
     if (ferror(input) != 0){
-        return FIO_ERROR_FAILURE;
+        return FIO_TRUE;
     }
-    return FIO_ERROR_SUCCESS;
+    return FIO_FALSE;
 }
 
 
-FIO_ERROR_ENUM FIO__writeSeekOffset(FILE *input, FIO_SIZE offsetFromCurrent){
+FIO_ERROR_ENUM FIO__setSeekOffset(FILE *input, FIO_SIZE offsetFromCurrent){
 
     if(fseek(input, offsetFromCurrent, SEEK_CUR) != 0){
         return FIO_ERROR_FAILURE;
@@ -186,7 +220,7 @@ FIO_ERROR_ENUM FIO__writeSeekOffset(FILE *input, FIO_SIZE offsetFromCurrent){
     return FIO_ERROR_SUCCESS;
 }
 
-FIO_ERROR_ENUM FIO__writeSeekPosition(FILE *input, FIO_SIZE offsetFromZero){
+FIO_ERROR_ENUM FIO__setSeekPosition(FILE *input, FIO_SIZE offsetFromZero){
 
     if(fseek(input, offsetFromZero, SEEK_SET) != 0){
         return FIO_ERROR_FAILURE;
@@ -194,7 +228,7 @@ FIO_ERROR_ENUM FIO__writeSeekPosition(FILE *input, FIO_SIZE offsetFromZero){
     return FIO_ERROR_SUCCESS;
 }
 
-FIO_ERROR_ENUM FIO__writeSeekToEnd(FILE *input){
+FIO_ERROR_ENUM FIO__setSeekToEnd(FILE *input){
 
     if(fseek(input, 0, SEEK_END) != 0){
         return FIO_ERROR_FAILURE;
@@ -205,19 +239,19 @@ FIO_ERROR_ENUM FIO__writeSeekToEnd(FILE *input){
     return FIO_ERROR_SUCCESS;
 }
 
-FIO_ERROR_ENUM FIO__writeSeekToStart(FILE *input){
-    return FIO__writeSeekPosition(input, 0);
+FIO_ERROR_ENUM FIO__setSeekToStart(FILE *input){
+    return FIO__setSeekPosition(input, 0);
 }
 
 
-FIO_SIZE FIO__readSeekPositionRaw(FILE *input){
+FIO_SIZE FIO__getSeekPositionRaw(FILE *input){
 
     FIO_SIZE position = 0;
-    FIO__readSeekPosition(input, &position);
+    FIO__getSeekPosition(input, &position);
     return position;
 }
 
-FIO_ERROR_ENUM FIO__readSeekPosition(FILE *input, FIO_SIZE *resultStorage){
+FIO_ERROR_ENUM FIO__getSeekPosition(FILE *input, FIO_SIZE *resultStorage){
 
     if(input == NULL){
         return FIO_ERROR_FAILURE;
@@ -322,7 +356,7 @@ FIO_SIZE FIO__readFullBestAttemptRaw(FILE *input, unsigned char **addressOfBuffe
 
         readCount = fread(mask, sizeof(unsigned char), prevSize, input);
 
-        if (FIO__isInError(input) == FIO_ERROR_FAILURE){
+        if (FIO__isInError(input) == FIO_TRUE){
             *addressOfBufferPointer = buffer;
             *readLength = size;
             debug("STREAM ERROR");
@@ -354,7 +388,7 @@ FIO_SIZE FIO__readFullBestAttemptRaw(FILE *input, unsigned char **addressOfBuffe
             return size;
         }
 
-        if(FIO__isSeekAtEnd(input) == FIO_ERROR_SUCCESS){
+        if(FIO__isSeekAtEnd(input) == FIO_TRUE){
             debug("AT END OF FILE");
             *addressOfBufferPointer = buffer;
             *readLength = size;

@@ -27,6 +27,10 @@ FIO_ERROR_ENUM FIO_initData(FIO_Data *data){
 
     }
 
+    data->dataSize = 0;
+    data->bufferSize = FIO_BUFF_SIZE;
+    data->dataBuffer = calloc(1, data->bufferSize);
+
     return FIO_ERROR_SUCCESS;
 }
 
