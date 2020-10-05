@@ -89,3 +89,58 @@ FIO_ERROR_ENUM FIO_FileReadNextData(FIO_File *file, FIO_Data *buffer){
     return FIO_ERROR_SUCCESS;
 }
 
+
+
+
+
+
+
+
+FIO_FileBuffer* FIO_newFileBuffer(FIO_File* copyFile, FIO_Data* copyData){
+
+    FIO_FileBuffer *fbuff = malloc(sizeof(FIO_FileBuffer));
+    if(fbuff == NULL){
+        return NULL;
+    }
+
+    if(FIO_initFileBuffer(fbuff, copyFile, copyData) == FIO_ERROR_FAILURE){
+        free(fbuff);
+        return NULL;
+    }
+
+    return fbuff;
+}
+FIO_ERROR_ENUM FIO_initFileBuffer(FIO_FileBuffer* metaStore, FIO_File* copyFile, FIO_Data* copyData){
+
+    memcpy(&metaStore->file, copyFile, sizeof(FIO_File));
+    memcpy(&metaStore->data, copyData, sizeof(FIO_Data));
+
+    return FIO_ERROR_SUCCESS;
+}
+
+void FIO_freeFileBuffer(FIO_FileBuffer *file){
+    FIO_freeFileBufferData(file);
+    free(file);
+}
+
+void FIO_freeFileBufferData(FIO_FileBuffer *file){
+    FIO_freeData(&file->data);
+    FIO_freeFile(&file->file);
+}
+
+void FIO_freeFileBufferNotData(FIO_FileBuffer *file){
+    free(file);
+}
+
+
+FIO_bool FIO_FileBufferHasError(FIO_FileBuffer *fbuff){
+    return FIO_FileHasError(&fbuff->file);
+}
+
+FIO_bool FIO_FileBufferAtEnd(FIO_FileBuffer *fbuff){
+    return FIO_FileAtEnd(&fbuff->file);
+}
+
+FIO_ERROR_ENUM FIO_FileBufferReadNextData(FIO_FileBuffer *fbuff){
+    return FIO_FileReadNextData(&fbuff->file, &fbuff->data);
+}

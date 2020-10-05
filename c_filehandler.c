@@ -90,11 +90,7 @@ void FIO_freeData(FIO_Data *data){
 }
 
 void FIO_freeDataData(FIO_Data *data){
-
     if(data->dataBuffer != NULL){
         free(data->dataBuffer);
     }
 }
-
-
-

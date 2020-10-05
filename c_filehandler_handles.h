@@ -25,7 +25,13 @@ void FIO_freeFileData(FIO_File *file);
 void FIO_freeFileNotFILE(FIO_File *file);
 void FIO_freeFileDataNotFILE(FIO_File *file);
 
+/**
+Returns if the FIO_File had an error in the last called operation
+**/
 FIO_bool FIO_FileHasError(FIO_File *file);
+/**
+Returns if the FIO_File FILE* is at the end
+**/
 FIO_bool FIO_FileAtEnd(FIO_File *file);
 
 /**
@@ -37,17 +43,34 @@ Returns FIO_ERROR_FAILURE is an error is detected; not necessarily
 FIO_ERROR_ENUM FIO_FileReadNextData(FIO_File *file, FIO_Data *buffer);
 
 
-FIO_FileBuffer* FIO_newFileBuffer(FILE* input, FIO_OPEN_ENUM openType);
-FIO_FileBuffer* FIO_newFileBufferFromPath(const char *filePath, FIO_OPEN_ENUM action);
-FIO_FileBuffer* FIO_newFileBufferFromFile(FIO_File* file, FIO_OPEN_ENUM action);
+/**
+FIO_FileBuffer
+Purely a copy container for operation with data convenience
+Simply initialize each separately on the base structure to avoid copying
+**/
+FIO_FileBuffer* FIO_newFileBuffer(FIO_File* copyFile, FIO_Data* copyData);
+FIO_ERROR_ENUM FIO_initFileBuffer(FIO_FileBuffer* metaStore, FIO_File* copyFile, FIO_Data* copyData);
 
-FIO_ERROR_ENUM FIO_initFileBuffer(FIO_FileBuffer* metaStore, FILE* input, FIO_OPEN_ENUM openType);
-FIO_ERROR_ENUM FIO_initFileBufferFromPath(FIO_FileBuffer* metaStore, const char *filePath, FIO_OPEN_ENUM action);
-FIO_ERROR_ENUM FIO_initFileBufferFromFile(FIO_FileBuffer* metaStore, FIO_File* file, FIO_OPEN_ENUM action);
+void FIO_freeFileBuffer(FIO_FileBuffer *file);
+void FIO_freeFileBufferData(FIO_FileBuffer *file);
+/**
+Does not free either of the copied data
+Intended for copying out of the structure or copying data pointers
+**/
+void FIO_freeFileBufferNotData(FIO_FileBuffer *file);
 
-void FIO_freeFileBuffer(FIO_File *file);
-void FIO_freeFileBufferData(FIO_File *file);
-void FIO_freeFileBufferNotFILE(FIO_File *file);
-void FIO_freeFileBufferDataNotFILE(FIO_File *file);
+/**
+See: FIO_FileHasError
+**/
+FIO_bool FIO_FileBufferHasError(FIO_FileBuffer *fbuff);
+/**
+See: FIO_FileAtEnd
+**/
+FIO_bool FIO_FileBufferAtEnd(FIO_FileBuffer *fbuff);
+/**
+See: FIO_FileReadNextData
+**/
+FIO_ERROR_ENUM FIO_FileBufferReadNextData(FIO_FileBuffer *fbuff);
+
 
 #endif // C_FILEHANDLER_HANDLES_H_INCLUDED
