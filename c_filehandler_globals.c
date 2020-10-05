@@ -24,6 +24,67 @@ static FIO_ERROR_ENUM FIO_X_addToCloseFailures(FILE* failedToClose){
     return FIO_ERROR_SUCCESS;
 }
 
+/***********************************************/
+
+FIO_OPEN_ENUM FIO__fopenArgsToEnum(const char* fopenArgument, size_t argsByteLength){
+
+    if(argsByteLength < 1 || argsByteLength > 3){
+        return FIO_OPEN_ENUM_ERROR;
+    }
+
+    FIO_OPEN_ENUM arg = FIO_OPEN_ENUM_ERROR;
+
+    switch(fopenArgument[0]){
+        case('a'): arg = FIO_OPEN_R_END_CREATE; break;
+        case('r'): arg = FIO_OPEN_R_EXISTING; break;
+        case('w'): arg = FIO_OPEN_W_CLEAR_CREATE; break;
+        default: return FIO_OPEN_ENUM_ERROR;
+    }
+
+    if(argsByteLength < 2){
+        return arg;
+    }
+
+    switch(fopenArgument[1]){
+        case('b'):break;
+        case('+'):break;
+        default: return FIO_OPEN_ENUM_ERROR;
+    }
+    switch(arg){
+        case(FIO_OPEN_R_EXISTING):
+            if(fopenArgument[1] == '+'){
+                arg = FIO_OPEN_RW_EXISTING;
+            }
+            break;
+        case(FIO_OPEN_R_END_CREATE):
+            if(fopenArgument[1] == '+'){
+                arg = FIO_OPEN_R_APPEND_CREATE;
+            }
+            break;
+        case(FIO_OPEN_W_CLEAR_CREATE):
+            if(fopenArgument[1] == '+'){
+                arg = FIO_OPEN_RW_CLEAR_CREATE;
+            }
+            break;
+        default:
+            return FIO_OPEN_ENUM_ERROR;
+    }
+
+    if(argsByteLength < 3){
+        return arg;
+    }
+
+    if(fopenArgument[2] != 'b'){
+        return FIO_OPEN_ENUM_ERROR;
+    }
+
+    return arg;
+}
+
+
+
+
+
 FIO_ERROR_ENUM FIO__tryCloseAllFailures(){
     FIO_SIZE i;
     for(i=0; i < FIO_X_closeFailuresMax; i++){
@@ -38,6 +99,7 @@ FIO_ERROR_ENUM FIO__tryCloseAllFailures(){
     }
     return FIO_ERROR_SUCCESS;
 }
+
 
 
 FILE* FIO__openPath(const char *filePath, FIO_OPEN_ENUM action){
@@ -171,11 +233,11 @@ FIO_ERROR_ENUM FIO__readSeekPosition(FILE *input, FIO_SIZE *resultStorage){
 
 
 FIO_ERROR_ENUM FIO__writeMemoryToPathSafe(const char *filePath, void *data, size_t byteLength){
-    return FIO__writeMemoryToPathType(filePath, data, byteLength FIO_OPEN_W_IF_NOT_EXIST);
+    return FIO__writeMemoryToPathType(filePath, data, byteLength, FIO_OPEN_W_IF_NOT_EXIST);
 }
 
 FIO_ERROR_ENUM FIO__writeMemoryToPath(const char *filePath, void *data, size_t byteLength){
-    return FIO__writeMemoryToPathType(filePath, data, byteLength FIO_OPEN_W_CLEAR_CREATE);
+    return FIO__writeMemoryToPathType(filePath, data, byteLength, FIO_OPEN_W_CLEAR_CREATE);
 }
 
 FIO_ERROR_ENUM FIO__writeMemoryToPathType(const char *filePath, void *data, size_t byteLength, FIO_OPEN_ENUM openType){

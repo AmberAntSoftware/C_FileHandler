@@ -3,15 +3,10 @@
 
 #include "c_filehandler.h"
 
-typedef enum FIO_FILEBUFFER_TYPE_ENUM{
-    FIO_FILEBUFFER_TYPE_READ,
-    FIO_FILEBUFFER_TYPE_WRITE,
-    FIO_FILEBUFFER_TYPE_RW
-}FIO_FILEBUFFER_TYPE_ENUM;
-
 typedef struct FIO_File{
     FILE *file;
     FIO_OPEN_ENUM type;
+    FIO_bool ownsFILE;
 }FIO_File;
 
 typedef struct FIO_FileBuffer{
@@ -19,20 +14,30 @@ typedef struct FIO_FileBuffer{
     FIO_Data data;
 }FIO_FileBuffer;
 
-typedef struct FIO_FileStream{
-    FIO_FileBuffer buff;
-    FIO_FILEBUFFER_TYPE_ENUM control;
-}FIO_FileStream;
+FIO_File* FIO_newFile(FILE* input, FIO_OPEN_ENUM openType, FIO_bool ownsFILE);
+FIO_File* FIO_newFileFromPath(const char *filePath, FIO_OPEN_ENUM action, FIO_bool ownsFILE);
 
-FIO_Data* FIO_newFileStream(FILE* input);
-FIO_Data* FIO_newFileStream(FILE* input, FIO_SIZE bufferSize);
-FIO_Data* FIO_newFileStreamDefer();
-FIO_Data* FIO_newFileStreamDeferComplex(FIO_SIZE bufferSize);
+FIO_ERROR_ENUM FIO_initFile(FIO_File* metaStore, FILE* input, FIO_OPEN_ENUM openType);
+FIO_ERROR_ENUM FIO_initFileFromPath(FIO_File* metaStore, const char *filePath, FIO_OPEN_ENUM action);
 
-FIO_ERROR_ENUM FIO_initFileStream(FIO_Data *data, FILE* input);
-FIO_ERROR_ENUM FIO_initFileStreamComplex(FIO_Data *data, FILE* input, FIO_SIZE bufferSize);
-FIO_ERROR_ENUM FIO_initFileStreamDefer(FIO_Data *data);
-FIO_ERROR_ENUM FIO_initFileStreamDeferComplex(FILE* input, FIO_SIZE bufferSize);
+void FIO_freeFile(FIO_File *file);
+void FIO_freeFileData(FIO_File *file);
+void FIO_freeFileNotFILE(FIO_File *file);
+void FIO_freeFileDataNotFILE(FIO_File *file);
 
+
+
+FIO_FileBuffer* FIO_newFileBuffer(FILE* input, FIO_OPEN_ENUM openType);
+FIO_FileBuffer* FIO_newFileBufferFromPath(const char *filePath, FIO_OPEN_ENUM action);
+FIO_FileBuffer* FIO_newFileBufferFromFile(FIO_File* file, FIO_OPEN_ENUM action);
+
+FIO_ERROR_ENUM FIO_initFileBuffer(FIO_FileBuffer* metaStore, FILE* input, FIO_OPEN_ENUM openType);
+FIO_ERROR_ENUM FIO_initFileBufferFromPath(FIO_FileBuffer* metaStore, const char *filePath, FIO_OPEN_ENUM action);
+FIO_ERROR_ENUM FIO_initFileBufferFromFile(FIO_FileBuffer* metaStore, FIO_File* file, FIO_OPEN_ENUM action);
+
+void FIO_freeFileBuffer(FIO_File *file);
+void FIO_freeFileBufferData(FIO_File *file);
+void FIO_freeFileBufferNotFILE(FIO_File *file);
+void FIO_freeFileBufferDataNotFILE(FIO_File *file);
 
 #endif // C_FILEHANDLER_HANDLES_H_INCLUDED

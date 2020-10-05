@@ -36,7 +36,10 @@ typedef enum FIO_OPEN_ENUM{
     ,
 
     /** Write only, if the file has no data or does not exist, creates file, starts at beginning **/
-    FIO_OPEN_W_IF_NOT_EXIST
+    FIO_OPEN_W_IF_NOT_EXIST,
+
+    /** enum error reporter **/
+    FIO_OPEN_ENUM_ERROR
 
 }FIO_OPEN_ENUM;
 
@@ -75,6 +78,12 @@ returns FIO_ERROR_SUCCESS if all stored handles closed
 returns FIO_ERROR_FAILURE if any handle(s) did not close
 **/
 FIO_ERROR_ENUM FIO__tryCloseAllFailures();
+
+/**
+converts a known fopen argument to FIO_OPEN_ENUM open type.
+returns FIO_OPEN_ENUM_ERROR on error
+**/
+FIO_OPEN_ENUM FIO__fopenArgsToEnum(const char* fopenArgument, size_t argsByteLength);
 
 FILE* FIO__openPath(const char *filePath, FIO_OPEN_ENUM action);
 FIO_ERROR_ENUM FIO__write(FILE *handle, void *data, size_t byteLength);
