@@ -74,7 +74,7 @@ FIO_bool FIO_FileAtEnd(FIO_File *file){
 
 FIO_ERROR_ENUM FIO_FileReadNextData(FIO_File *file, FIO_Data *buffer){
 
-    if(FIO_FileAtEnd(file->file)){
+    if(FIO_FileAtEnd(file) == FIO_TRUE){
         buffer->dataSize = 0;
         buffer->bufferSize = 0;
         return FIO_ERROR_SUCCESS;

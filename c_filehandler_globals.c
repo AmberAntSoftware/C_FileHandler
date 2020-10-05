@@ -81,10 +81,6 @@ FIO_OPEN_ENUM FIO__fopenArgsToEnum(const char* fopenArgument, size_t argsByteLen
     return arg;
 }
 
-
-
-
-
 FIO_ERROR_ENUM FIO__tryCloseAllFailures(){
     FIO_SIZE i;
     for(i=0; i < FIO_X_closeFailuresMax; i++){
@@ -337,6 +333,7 @@ FIO_ERROR_ENUM FIO__readFullBestAttempt(FILE *input, FIO_Data *metaStore){
 
 
 FIO_SIZE FIO__readFullBestAttemptRaw(FILE *input, unsigned char **addressOfBufferPointer, FIO_SIZE *readLength){
+
     const FIO_SIZE STARTING_SIZE = 1024;
 
     size_t readCount = 0;

@@ -100,7 +100,7 @@ FIO_OPEN_ENUM FIO__fopenArgsToEnum(const char* fopenArgument, size_t argsByteLen
 
 
 /*************************************
-FILE* manipuation
+FILE* manipulation
 *************************************/
 
 
